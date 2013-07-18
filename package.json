@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "description": "Manage a stack of functions and execute them with flow control.",
   "main": "stact.js",
-  "dependencies": {},
+  "dependencies": {
+    "stac": "0.0.1"
+  },
   "devDependencies": {
     "mocha": "*"
   },
