@@ -1,0 +1,27 @@
+{
+  "name": "stact",
+  "version": "0.0.0",
+  "description": "Manage a stack of functions and execute them with flow control.",
+  "main": "stact.js",
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "*"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cpsubrian/node-stact.git"
+  },
+  "homepage": "https://github.com/cpsubrian/node-stact",
+  "keywords": [
+    "flow",
+    "control"
+  ],
+  "author": "Brian Link <cpsubrian@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cpsubrian/node-stact/issues"
+  }
+}
