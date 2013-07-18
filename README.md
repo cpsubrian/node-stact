@@ -5,6 +5,7 @@ Manage a stack of functions and execute them with flow control.
 
 [![build status](https://secure.travis-ci.org/cpsubrian/node-stact.png)](http://travis-ci.org/cpsubrian/node-stact)
 
+![Yummy](http://www.ihop.com/menus/main-menu/pancakes/-/media/ihop/MenuItems/Pancakes/Strawberry%20Banana%20Pancakes/Strawberry_Banana_Pancakes.png?mh=367)
 
 - - -
 
