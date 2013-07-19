@@ -59,4 +59,28 @@ describe('basic test', function () {
       done();
     });
   });
+
+  it('can run function in parallel with arbitrary arguments', function (done) {
+    stack.add(func);
+    stack.add(func);
+    stack.add(func);
+
+    stack.run('A', function (err, results) {
+      assert.ifError(err);
+      assert.deepEqual(results, ['A', 'A', 'A']);
+      done();
+    });
+  });
+
+  it('can run function in series with arbitrary arguments', function (done) {
+    stack.add(func);
+    stack.add(func);
+    stack.add(func);
+
+    stack.runSeries('A', function (err, results) {
+      assert.ifError(err);
+      assert.deepEqual(results, ['A', 'A', 'A']);
+      done();
+    });
+  });
 });

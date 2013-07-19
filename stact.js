@@ -6,8 +6,11 @@ function Stact (options) {
 }
 inherits(Stact, Stac);
 
-Stact.prototype.run = function (cb) {
-  var self = this, results = [];
+Stact.prototype.run = function () {
+  var self = this
+    , results = []
+    , args = Array.prototype.slice.call(arguments, 0)
+    , cb = args.pop();
 
   function end(err, result) {
     if (err) return cb(err, results);
@@ -17,27 +20,38 @@ Stact.prototype.run = function (cb) {
     }
   }
 
+  args.push(end);
+
   this.forEach(function (func) {
-    func(end);
+    func.apply(null, args);
   });
 };
 
-Stact.prototype.runSeries = function (cb) {
-  var self = this, results = [];
-  function next () {
-    var func = self.shift();
+Stact.prototype.runSeries = function () {
+  var self = this
+    , results = []
+    , args = Array.prototype.slice.call(arguments, 0)
+    , cb = args.pop();
+
+  function run () {
+    var func = self.shift()
+      , runArgs = args.slice(0);
+
+    runArgs.push(function (err, result) {
+      if (err) return cb(err, results);
+      results.push(result);
+      run();
+    });
+
     if (func) {
-      func(function (err, result) {
-        if (err) return cb(err, results);
-        results.push(result);
-        next();
-      });
+      func.apply(null, runArgs);
     }
     else {
       cb(null, results);
     }
   }
-  next();
+
+  run();
 };
 
 module.exports = Stact;
