@@ -98,6 +98,19 @@ describe('basic test', function () {
     });
   });
 
+  it('can handle functions added with weights', function (done) {
+    stack.add(3, func.bind(null, 'D'));
+    stack.add(1, func.bind(null, 'B'));
+    stack.add(2, func.bind(null, 'C'));
+    stack.first(400, func.bind(null, 'A'));
+
+    stack.runSeries(function (err, results) {
+      assert.ifError(err);
+      assert.deepEqual(results, ['A', 'B', 'C', 'D']);
+      done();
+    });
+  });
+
   it('can handle objects with a funcProp and weight', function (done) {
     stack = createStact({
       funcProp: 'func'
