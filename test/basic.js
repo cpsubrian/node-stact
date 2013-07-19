@@ -23,7 +23,13 @@ describe('basic test', function () {
     stack.run(function (err, results) {
       assert.ifError(err);
       assert.equal(results.length, 3);
-      done();
+
+      // Can run multiple times.
+      stack.run(function (err, results) {
+        assert.ifError(err);
+        assert.equal(results.length, 3);
+        done();
+      });
     });
   });
 
@@ -38,7 +44,15 @@ describe('basic test', function () {
       assert.equal(results.length, 4);
       assert.equal(results[0], 'A');
       assert.equal(results[3], 'D');
-      done();
+
+      // Can run multiple times.
+      stack.runSeries(function (err, results) {
+        assert.ifError(err);
+        assert.equal(results.length, 4);
+        assert.equal(results[0], 'A');
+        assert.equal(results[3], 'D');
+        done();
+      });
     });
   });
 

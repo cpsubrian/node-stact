@@ -28,13 +28,13 @@ Stact.prototype.run = function () {
 };
 
 Stact.prototype.runSeries = function () {
-  var self = this
+  var stack = this.clone()
     , results = []
     , args = Array.prototype.slice.call(arguments, 0)
     , cb = args.pop();
 
   function run () {
-    var func = self.shift()
+    var func = stack.shift()
       , runArgs = args.slice(0);
 
     runArgs.push(function (err, result) {
