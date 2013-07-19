@@ -10,12 +10,11 @@ Manage a sorted stack of functions and execute them with flow control.
 Example
 -------
 
-Imagine you want to validate a model before saving it. You're validation handlers
+Imagine you want to validate a model before saving it. Your validation handlers
 could be built up as a stack.
 
 ```js
-var createStact = require('stact')
-  , validators = createStact();
+var validators = require('stact')();
 
 var model = {
   id: 'E48Hy',
@@ -26,7 +25,9 @@ var model = {
 
 // Email is required.
 validators.add(function (model, next) {
-  if (!model.email) return next(new Error('Email is required'));
+  if (!model.email) {
+    return next(new Error('Email is required'));
+  }
   next();
 });
 
@@ -34,7 +35,9 @@ validators.add(function (model, next) {
 validators.add(function (model, next) {
   myDB.findName(model.id, function (err, name) {
     if (err) return next(err);
-    if (model.name !== name) return next(new Error('Name does not match our records'));
+    if (model.name !== name) {
+      return next(new Error('Name does not match our records'));
+    }
     next();
   });
 });
