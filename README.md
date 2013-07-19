@@ -98,36 +98,6 @@ stack.first(function () { /* ... */});
 stack.last(function () { /* ... */});
 ```
 
-### Add objects to the stack (that have a function property)
-
-For more advanced use cases, you can add objects to the stack, but you'll
-need to specify the property where the function can be found.
-
-```js
-var createStact = require('stact');
-var stack = createStact({
-  funcProp: 'task'
-});
-
-stack.add({
-  name: 'Read Files',
-  task: function (next) {
-    // Do some work.
-
-    next();
-  }
-});
-
-stack.add({
-  name: 'Save to S3',
-  task: function (next) {
-    // Do some work.
-
-    next();
-  }
-});
-```
-
 ### Create a stack that revolves around one function.
 
 In some cases you want to call the same function multiple times with different
