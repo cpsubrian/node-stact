@@ -1,10 +1,10 @@
-var Stact = require('../');
+var createStact = require('../');
 
 describe('basic test', function () {
   var stack, func;
 
   beforeEach(function () {
-    stack = new Stact();
+    stack = createStact();
     results = [];
   });
 
@@ -94,6 +94,31 @@ describe('basic test', function () {
     stack.runSeries('A', function (err, results) {
       assert.ifError(err);
       assert.deepEqual(results, ['A', 'A', 'A']);
+      done();
+    });
+  });
+
+  it('can handle objects with a funcProp and weight', function (done) {
+    stack = createStact({
+      funcProp: 'func'
+    });
+
+    stack.add({
+      weight: 3,
+      func: func.bind(null, 'C')
+    });
+    stack.add({
+      weight: 1,
+      func: func.bind(null, 'A')
+    });
+    stack.add({
+      weight: 2,
+      func: func.bind(null, 'B')
+    });
+
+    stack.runSeries(function (err, results) {
+      assert.ifError(err);
+      assert.deepEqual(results, ['A', 'B', 'C']);
       done();
     });
   });

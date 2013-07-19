@@ -1,7 +1,7 @@
 stact
 =====
 
-Manage a stack of functions and execute them with flow control.
+Manage a sorted stack of functions and execute them with flow control.
 
 [![build status](https://secure.travis-ci.org/cpsubrian/node-stact.png)](http://travis-ci.org/cpsubrian/node-stact)
 
