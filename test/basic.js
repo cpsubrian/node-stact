@@ -22,7 +22,7 @@ describe('basic test', function () {
 
     stack.run(function (err, results) {
       assert.ifError(err);
-      assert.equal(results.length, 3);
+      assert.deepEqual(results, ['A', 'B', 'C']);
 
       // Can run multiple times.
       stack.run(function (err, results) {
@@ -132,6 +132,23 @@ describe('basic test', function () {
     stack.runSeries(function (err, results) {
       assert.ifError(err);
       assert.deepEqual(results, ['A', 'B', 'C']);
+      done();
+    });
+  });
+
+  it('can run a stack that uses a single function', function (done) {
+    stack = createStact(function (methodName, next) {
+      next(null, this[methodName]());
+    });
+
+    stack.last('D');
+    stack.add('B');
+    stack.add('C');
+    stack.first('A');
+
+    stack.runSeries('toLowerCase', function (err, results) {
+      assert.ifError(err);
+      assert.deepEqual(results, ['a', 'b', 'c', 'd']);
       done();
     });
   });

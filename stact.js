@@ -6,8 +6,16 @@ function Stact (options) {
 
   options = options || {};
 
+  if (typeof options === 'function') {
+    options = {
+      func: options
+    };
+  }
+
+  this._func = options.func || null;
   this._funcProp = options.funcProp || null;
   this._getFunc = options.getFunc || function (item) {
+    if (typeof self._func === 'function') return self._func;
     if (self._funcProp) return item[self._funcProp];
     return item;
   };
@@ -19,21 +27,29 @@ inherits(Stact, Stac);
 Stact.prototype.run = function () {
   var self = this
     , results = []
+    , count = 0
     , args = Array.prototype.slice.call(arguments, 0)
-    , cb = args.pop();
+    , cb = args.pop()
+    , end = args.length
+    , abort = false;
 
-  function end(err, result) {
-    if (err) return cb(err, results);
-    results.push(result);
-    if (results.length >= self.length) {
-      cb(null, results);
-    }
+  function finish (i) {
+    return (function runFinish (err, result) {
+      if (abort) return;
+      if (err) {
+        abort = true;
+        return cb(err, results);
+      }
+      results[i] = result;
+      if (++count >= self.length) {
+        cb(null, results);
+      }
+    });
   }
 
-  args.push(end);
-
-  this.forEach(function (item) {
-    self._getFunc(item).apply(null, args);
+  this.forEach(function (item, i) {
+    args[end] = finish(i);
+    self._getFunc(item).apply(item, args);
   });
 };
 
@@ -55,7 +71,7 @@ Stact.prototype.runSeries = function () {
     });
 
     if (item) {
-      self._getFunc(item).apply(null, runArgs);
+      self._getFunc(item).apply(item, runArgs);
     }
     else {
       cb(null, results);

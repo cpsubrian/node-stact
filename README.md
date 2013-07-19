@@ -7,6 +7,110 @@ Manage a sorted stack of functions and execute them with flow control.
 
 ![Yummy](http://www.ihop.com/menus/main-menu/pancakes/-/media/ihop/MenuItems/Pancakes/Strawberry%20Banana%20Pancakes/Strawberry_Banana_Pancakes.png?mh=367)
 
+Example
+-------
+
+
+
+API
+---
+
+### Add functions to the stack
+
+Add functions to the stack using the API of [stac](https://github.com/cpsubrian/node-stac).
+
+The last argument of the function MUST always be a continuation callback.
+
+```js
+stack.add(function (next) {
+  // Do stuff.
+
+  done();
+});
+```
+
+All of **stac**'s API is supported, such as weighting your stack:
+
+```js
+stack.add(300, function () { /* ... */ });
+stack.add(100, function () { /* ... */ });
+stack.add(500, function () { /* ... */ });
+```
+
+### Add objects to the stack (that have a function property)
+
+For more advanced use cases, you can add objects to the stack, but you'll
+need to specify the property where the function can be found.
+
+```js
+var createStact = require('stact');
+var stack = createStact({
+  funcProp: 'task'
+});
+
+stack.add({
+  name: 'Read Files',
+  task: function (next) {
+    // Do some work.
+
+    next();
+  }
+});
+
+stack.add({
+  name: 'Save to S3',
+  task: function (next) {
+    // Do some work.
+
+    next();
+  }
+});
+```
+
+### Create a stack that revolves around one function.
+
+In somecases you want to call the same function multiple times with different
+information.
+
+```js
+var createStact = require('stact');
+var stack = createStact(function (prefix, next)
+  // `this` will be set to the items added to the stack.
+  next(null, prefix + this);
+});
+
+stack.add('Brian');
+stack.add('Joe');
+stack.add('Mary');
+
+stack.runSeries('Name: ', function (err, results) {
+  console.log(results);
+  // [ 'Name: Brian', 'Name: Joe', 'Name: 'Mary' ]
+});
+```
+
+### stack.run ( [arguments ...], callback )
+
+Run the stack (in parallel), passing arbitray arguments to the functions.
+
+```js
+stack.run (arg1, arg2, function (err, results) {
+  // Handle error or the results.
+});
+```
+
+
+### stack.runSeries ( [arguments ...], callback )
+
+Run the stack (in series), passing arbitrary arguments to the functions.
+
+```js
+stack.runSeries (arg1, arg2, arg3, function (err, results) {
+  // Handle error or the results.
+});
+```
+
+
 - - -
 
 ### Developed by [Terra Eclipse](http://www.terraeclipse.com)
