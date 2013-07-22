@@ -55,13 +55,13 @@ Stact.prototype.run = function () {
 
 Stact.prototype.runSeries = function () {
   var self = this
-    , stack = this.clone()
+    , items = this.items()
     , results = []
     , args = Array.prototype.slice.call(arguments, 0)
     , cb = args.pop();
 
   function run () {
-    var item = stack.shift()
+    var item = items.shift()
       , runArgs = args.slice(0);
 
     runArgs.push(function (err, result) {
@@ -83,14 +83,14 @@ Stact.prototype.runSeries = function () {
 
 Stact.prototype.runWaterfall = function () {
   var self = this
-    , stack = this.clone()
+    , items = this.items()
     , args = Array.prototype.slice.call(arguments, 0)
     , cb = args.pop();
 
   function run () {
     var runArgs = Array.prototype.slice.call(arguments, 0)
       , err = runArgs.shift()
-      , item = stack.shift();
+      , item = items.shift();
 
     if (err) return cb(err);
 
