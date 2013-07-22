@@ -67,7 +67,12 @@ Stact.prototype.runSeries = function () {
     runArgs.push(function (err, result) {
       if (err) return cb(err, results);
       results.push(result);
-      run();
+      if (results.length % 100 === 0) {
+        setImmediate(run);
+      }
+      else {
+        run();
+      }
     });
 
     if (item) {
@@ -84,6 +89,7 @@ Stact.prototype.runSeries = function () {
 Stact.prototype.runWaterfall = function () {
   var self = this
     , items = this.items()
+    , count = 0
     , args = Array.prototype.slice.call(arguments, 0)
     , cb = args.pop();
 
@@ -94,7 +100,14 @@ Stact.prototype.runWaterfall = function () {
 
     if (err) return cb(err);
 
-    runArgs.push(run);
+    runArgs.push(function () {
+      if (++count % 100 === 0) {
+        setImmediate.apply(null, [run].concat(Array.prototype.slice.call(arguments, 0)));
+      }
+      else {
+        run.apply(null, arguments);
+      }
+    });
 
     if (item) {
       self._getFunc(item).apply(item, runArgs);
