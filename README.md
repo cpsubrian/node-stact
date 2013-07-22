@@ -72,7 +72,7 @@ var createStact = require('stact');
 var stack = createStact(options);
 ```
 
-#### options (none required)
+#### options
 
 - All [stac options](https://github.com/cpsubrian/node-stac#options) are supported.
 - **func** - If set, every item in the stack will run with this function. [See Example](https://github.com/cpsubrian/node-stact#create-a-stack-that-revolves-around-one-function)
