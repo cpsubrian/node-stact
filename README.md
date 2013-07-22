@@ -150,7 +150,7 @@ error, but other asychronous callbacks may continue to run in the background.
 Your callback will only be called once.
 
 ```js
-stack.run (arg1, arg2, function (err, results) {
+stack.run(arg1, arg2, function (err, results) {
   // Handle error or the results.
 });
 ```
@@ -164,7 +164,7 @@ Any error will cause the run to immediately end, invoking the provided callback
 with the error.
 
 ```js
-stack.runSeries (arg1, arg2, arg3, function (err, results) {
+stack.runSeries(arg1, arg2, arg3, function (err, results) {
   // Handle error or the results.
 });
 ```
