@@ -1,6 +1,6 @@
 {
   "name": "stact",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Manage a stack of functions and execute them with flow control.",
   "main": "stact.js",
   "dependencies": {
