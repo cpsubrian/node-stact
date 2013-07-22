@@ -125,17 +125,23 @@ stack.runSeries('Name: ', function (err, results) {
 Run the stack (in parallel), passing arbitray arguments to the functions.
 Results will be in sorted stack order.
 
+Any error will cause the provided callback to be immediately invoked with the
+error, but other asychronous callbacks may continue to run in the background.
+Your callback will only be called once.
+
 ```js
 stack.run (arg1, arg2, function (err, results) {
   // Handle error or the results.
 });
 ```
 
-
 ### stack.runSeries ( [arguments ...], callback )
 
-Run the stack (in series), passing arbitrary arguments to the functions.
+Run the stack in series, passing arbitrary arguments to the functions.
 Results will be in sorted stack order.
+
+Any error will cause the run to immediately end, invoking the provided callback
+with the error.
 
 ```js
 stack.runSeries (arg1, arg2, arg3, function (err, results) {
@@ -143,6 +149,61 @@ stack.runSeries (arg1, arg2, arg3, function (err, results) {
 });
 ```
 
+### stack.runWaterfall ( [arguments ...], callback )
+
+Run the stack in a 'waterfall'. In this mode each function in the stack will
+be calling the next function in the stack, with the last stack item calling
+the final callback provided in the `stack.runWaterfall()` call.
+
+The arguments can change at any-time, but the most common use-case is probably passing
+one argument that is being modified by the stack, and other arguments providing
+supplementary data.
+
+Any error will cause the run to immediately end, invoking the provided callback
+with the error.
+
+**Example with changing arguments**
+
+```js
+stack.add(function (next) {
+  next(null, 'one', 'two');
+});
+
+stack.add(function (arg1, arg2, next) {
+  // arg1 is 'one'
+  // arg2 is 'two'
+  next(null, 'three');
+});
+
+stack.add(function (arg1, next) {
+  // arg1 is 'three'
+  next(null, 'done');
+});
+
+stack.runWaterfall(function (err, result) {
+  // result now equals 'done'
+});
+```
+
+**Example passing along something to be modified**
+
+```js
+stack.add(function (result, spacer, next) {
+  next(null, result + 'Foo' + spacer);
+});
+
+stack.add(function (result, spacer, next) {
+  next(null, result + 'Bar' + spacer);
+});
+
+stack.add(function (result, spacer, next) {
+  next(null, result + 'Baz' + spacer);
+});
+
+stack.runWaterfall('Result: ', ' - ', function (err, result) {
+  // result is now 'Result: Foo - Bar - Baz - '
+});
+```
 
 - - -
 

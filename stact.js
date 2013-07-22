@@ -81,6 +81,34 @@ Stact.prototype.runSeries = function () {
   run();
 };
 
+Stact.prototype.runWaterfall = function () {
+  var self = this
+    , stack = this.clone()
+    , args = Array.prototype.slice.call(arguments, 0)
+    , cb = args.pop();
+
+  function run () {
+    var runArgs = Array.prototype.slice.call(arguments, 0)
+      , err = runArgs.shift()
+      , item = stack.shift();
+
+    if (err) return cb(err);
+
+    runArgs.push(run);
+
+    if (item) {
+      self._getFunc(item).apply(item, runArgs);
+    }
+    else {
+      runArgs.unshift(null);
+      cb.apply(null, runArgs);
+    }
+  }
+
+  args.unshift(null);
+  run.apply(null, args);
+};
+
 module.exports = function (options) {
   return new Stact(options);
 };

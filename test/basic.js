@@ -56,6 +56,37 @@ describe('basic test', function () {
     });
   });
 
+  it('can run functions in a waterfall', function (done) {
+    stack.add(function (arg1, next) {
+      setTimeout(function () {
+        next(null, arg1, '2');
+      }, Math.random * 10);
+    });
+
+    stack.add(function (arg1, arg2, next) {
+      setTimeout(function () {
+        next(null, arg1, arg2, '3');
+      }, Math.random * 10);
+    });
+
+    stack.add(function (arg1, arg2, arg3, next) {
+      setTimeout(function () {
+        next(null, arg1 + arg2 + arg3 + '4');
+      }, Math.random * 10);
+    });
+
+    stack.add(function (combined, next) {
+      next(null, 'Combined', combined);
+    });
+
+    stack.runWaterfall('1', function (err, result1, result2) {
+      assert.ifError(err);
+      assert.equal(result1, 'Combined');
+      assert.equal(result2, '1234');
+      done();
+    });
+  });
+
   it('stops running if it hits an error', function (done) {
     stack.add(func.bind(null, 'A'));
     stack.add(func.bind(null, 'B'));
