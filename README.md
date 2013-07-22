@@ -62,6 +62,26 @@ validators.run(model, function (err) {
 API
 ---
 
+### Create a stact
+
+This module exports a single factory function for creating stact stacks. It is
+called like:
+
+```js
+var createStact = require('stact');
+var stack = createStact(options);
+```
+
+#### options (none required)
+
+- All [stac options](https://github.com/cpsubrian/node-stac#options) are supported.
+- **func** - If set, every item in the stack will run with this function. [See Example](https://github.com/cpsubrian/node-stact#create-a-stack-that-revolves-around-one-function)
+- **funcProp** - If set, stact will assume that items are objects and that the
+             function to run will be found under this property.
+- **getFunc** - If set, stact will call this function for each item, passing the item
+            to it. It should return the function to run for the item.
+
+
 ### Add functions to the stack
 
 Add functions to the stack using the API of [stac](https://github.com/cpsubrian/node-stac).
@@ -189,15 +209,15 @@ stack.runWaterfall(function (err, result) {
 
 ```js
 stack.add(function (result, spacer, next) {
-  next(null, result + 'Foo' + spacer);
+  next(null, result + 'Foo' + spacer, spacer);
 });
 
 stack.add(function (result, spacer, next) {
-  next(null, result + 'Bar' + spacer);
+  next(null, result + 'Bar' + spacer, spacer);
 });
 
 stack.add(function (result, spacer, next) {
-  next(null, result + 'Baz' + spacer);
+  next(null, result + 'Baz' + spacer, spacer);
 });
 
 stack.runWaterfall('Result: ', ' - ', function (err, result) {
