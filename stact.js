@@ -14,7 +14,7 @@ function Stact (options) {
 
   this._func = options.func || null;
   this._funcProp = options.funcProp || null;
-  this._getFunc = options.getFunc || function (item) {
+  this._getFunc = options.getFunc || function getFunc (item) {
     if (typeof self._func === 'function') return self._func;
     if (self._funcProp) return item[self._funcProp];
     return item;
@@ -47,7 +47,7 @@ Stact.prototype.run = function () {
     });
   }
 
-  this.forEach(function (item, i) {
+  this.forEach(function iterator (item, i) {
     args[end] = finish(i);
     self._getFunc(item).apply(item, args);
   });
@@ -64,7 +64,7 @@ Stact.prototype.runSeries = function () {
     var item = items.shift()
       , runArgs = args.slice(0);
 
-    runArgs.push(function (err, result) {
+    runArgs.push(function runNext (err, result) {
       if (err) return cb(err, results);
       results.push(result);
       if (results.length % 100 === 0) {
@@ -100,7 +100,7 @@ Stact.prototype.runWaterfall = function () {
 
     if (err) return cb(err);
 
-    runArgs.push(function () {
+    runArgs.push(function runNext () {
       if (++count % 100 === 0) {
         setImmediate.apply(null, [run].concat(Array.prototype.slice.call(arguments, 0)));
       }
