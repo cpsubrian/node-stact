@@ -105,6 +105,19 @@ describe('basic test', function () {
     });
   });
 
+  it('can run an empty stack', function (done) {
+    stack.run(function (err) {
+      assert.ifError(err);
+      stack.runSeries(function (err) {
+        assert.ifError(err);
+        stack.runWaterfall(function (err) {
+          assert.ifError(err);
+          done();
+        });
+      });
+    });
+  });
+
   it('can run function in parallel with arbitrary arguments', function (done) {
     stack.add(func);
     stack.add(func);

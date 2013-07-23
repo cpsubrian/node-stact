@@ -1,5 +1,6 @@
 var Stac = require('stac').Stac
-  , inherits = require('util').inherits;
+  , inherits = require('util').inherits
+  , setImmediate = setImmediate || process.nextTick;
 
 function Stact (options) {
   var self = this;
@@ -33,6 +34,8 @@ Stact.prototype.run = function () {
     , end = args.length
     , abort = false;
 
+  if (!this.length) return cb();
+
   function finish (i) {
     return (function runFinish (err, result) {
       if (abort) return;
@@ -59,6 +62,8 @@ Stact.prototype.runSeries = function () {
     , results = []
     , args = Array.prototype.slice.call(arguments, 0)
     , cb = args.pop();
+
+  if (!this.length) return cb();
 
   function run () {
     var item = items.shift()
@@ -92,6 +97,8 @@ Stact.prototype.runWaterfall = function () {
     , count = 0
     , args = Array.prototype.slice.call(arguments, 0)
     , cb = args.pop();
+
+  if (!this.length) return cb();
 
   function run () {
     var runArgs = Array.prototype.slice.call(arguments, 0)
