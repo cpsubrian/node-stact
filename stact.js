@@ -69,18 +69,17 @@ Stact.prototype.runSeries = function () {
     var item = items.shift()
       , runArgs = args.slice(0);
 
-    runArgs.push(function runNext (err, result) {
-      if (err) return cb(err, results);
-      results.push(result);
-      if (results.length % 100 === 0) {
-        setImmediate(run);
-      }
-      else {
-        run();
-      }
-    });
-
     if (item) {
+      runArgs.push(function runNext (err, result) {
+        if (err) return cb(err, results);
+        results.push(result);
+        if (results.length % 100 === 0) {
+          setImmediate(run);
+        }
+        else {
+          run();
+        }
+      });
       self._getFunc(item).apply(item, runArgs);
     }
     else {
@@ -107,16 +106,15 @@ Stact.prototype.runWaterfall = function () {
 
     if (err) return cb(err);
 
-    runArgs.push(function runNext () {
-      if (++count % 100 === 0) {
-        setImmediate.apply(null, [run].concat(Array.prototype.slice.call(arguments, 0)));
-      }
-      else {
-        run.apply(null, arguments);
-      }
-    });
-
     if (item) {
+      runArgs.push(function runNext () {
+        if (++count % 100 === 0) {
+          setImmediate.apply(null, [run].concat(Array.prototype.slice.call(arguments, 0)));
+        }
+        else {
+          run.apply(null, arguments);
+        }
+      });
       self._getFunc(item).apply(item, runArgs);
     }
     else {
