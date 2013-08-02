@@ -29,9 +29,8 @@ Stact.prototype.run = function () {
   var self = this
     , results = []
     , count = 0
-    , args = Array.prototype.slice.call(arguments, 0)
-    , cb = args.pop()
-    , end = args.length
+    , cb = arguments[arguments.length - 1]
+    , args = arguments
     , abort = false;
 
   if (!this.length) return cb();
@@ -51,8 +50,7 @@ Stact.prototype.run = function () {
   }
 
   this.forEach(function iterator (item, i) {
-    args[end] = finish(i);
-    self._getFunc(item).apply(item, args);
+    fastApply(self._getFunc(item), item, args, finish(i));
   });
 };
 
@@ -60,27 +58,26 @@ Stact.prototype.runSeries = function () {
   var self = this
     , items = this.items()
     , results = []
-    , args = Array.prototype.slice.call(arguments, 0)
-    , cb = args.pop();
+    , args = arguments
+    , cb = arguments[arguments.length - 1];
 
   if (!this.length) return cb();
 
-  function run () {
-    var item = items.shift()
-      , runArgs = args.slice(0);
+  function runNext (err, result) {
+    if (err) return cb(err, results);
+    results.push(result);
+    if (results.length % 100 === 0) {
+      setImmediate(run);
+    }
+    else {
+      run();
+    }
+  }
 
+  function run () {
+    var item = items.shift();
     if (item) {
-      runArgs.push(function runNext (err, result) {
-        if (err) return cb(err, results);
-        results.push(result);
-        if (results.length % 100 === 0) {
-          setImmediate(run);
-        }
-        else {
-          run();
-        }
-      });
-      self._getFunc(item).apply(item, runArgs);
+      fastApply(self._getFunc(item), item, args, runNext);
     }
     else {
       cb(null, results);
@@ -126,6 +123,28 @@ Stact.prototype.runWaterfall = function () {
   args.unshift(null);
   run.apply(null, args);
 };
+
+// Silly optimization instead of calling apply().
+function fastApply (func, thisArg, args, cb) {
+  switch (args.length) {
+    case 1:
+      return func.call(thisArg, cb);
+    case 2:
+      return func.call(thisArg, args[0], cb);
+    case 3:
+      return func.call(thisArg, args[0], args[1], cb);
+    case 4:
+      return func.call(thisArg, args[0], args[1], args[2], cb);
+    case 5:
+      return func.call(thisArg, args[0], args[1], args[2], args[3], cb);
+    case 6:
+      return func.call(thisArg, args[0], args[1], args[2], args[3], args[4], cb);
+    case 7:
+      return func.call(thisArg, args[0], args[1], args[2], args[3], args[4], args[5], cb);
+    case 8:
+      return func.call(thisArg, args[0], args[1], args[2], args[3], args[4], args[5], args[6], cb);
+  }
+}
 
 module.exports = function (options) {
   return new Stact(options);
