@@ -92,7 +92,11 @@ The last argument of the function MUST always be a continuation callback.
 stack.add(function (next) {
   // Do stuff.
 
-  done();
+  // There was an error ...
+  next(new Error('Oops!'));
+
+  // ... or if no error ...
+  next();
 });
 ```
 
