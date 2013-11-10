@@ -196,4 +196,46 @@ describe('basic test', function () {
       done();
     });
   });
+
+  it('can run a stack with initial items', function (done) {
+    createStact([
+      function (next) {
+        next(null, 'a');
+      },
+      function (next) {
+        next(null, 'b');
+      },
+      function (next) {
+        next(null, 'c');
+      },
+      function (next) {
+        next(null, 'd');
+      }
+    ]).runSeries(function (err, results) {
+      assert.ifError(err);
+      assert.deepEqual(results, ['a', 'b', 'c', 'd']);
+      done();
+    });
+  });
+
+  it('can run with options and initial items', function (done) {
+    stack = createStact({funcProp: 'func'}, [
+      {
+        weight: 3,
+        func: func.bind(null, 'C')
+      },
+      {
+        weight: 1,
+        func: func.bind(null, 'A')
+      },
+      {
+        weight: 2,
+        func: func.bind(null, 'B')
+      }
+    ]).runSeries(function (err, results) {
+      assert.ifError(err);
+      assert.deepEqual(results, ['A', 'B', 'C']);
+      done();
+    });
+  });
 });

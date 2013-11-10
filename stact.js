@@ -2,17 +2,20 @@ var Stac = require('stac').Stac
   , inherits = require('util').inherits
   , setImmediate = setImmediate || process.nextTick;
 
-function Stact (options) {
+function Stact (options, items) {
   var self = this;
-
-  options = options || {};
 
   if (typeof options === 'function') {
     options = {
       func: options
     };
   }
+  if (Array.isArray(options)) {
+    items = options;
+    options = {};
+  }
 
+  options = options || {};
   this._func = options.func || null;
   this._funcProp = options.funcProp || null;
   this._getFunc = options.getFunc || function getFunc (item) {
@@ -21,7 +24,7 @@ function Stact (options) {
     return item;
   };
 
-  Stac.call(this, options);
+  Stac.call(this, options, items);
 }
 inherits(Stact, Stac);
 
@@ -146,7 +149,7 @@ function fastApply (func, thisArg, args, cb) {
   }
 }
 
-module.exports = function (options) {
-  return new Stact(options);
+module.exports = function (options, items) {
+  return new Stact(options, items);
 };
 module.exports.Stact = Stact;
